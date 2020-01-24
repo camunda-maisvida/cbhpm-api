@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.med.maisvida.entity.prestador.Prestador;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
+import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
+import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
 import br.med.maisvida.service.prestador.PrestadorService;
 
 @RestController
@@ -42,5 +44,13 @@ public class PrestadorRestController {
 		final List<PrestadorDTO> response = new ArrayList<>();
 		entidades.stream().forEach(item -> response.add(new PrestadorDTO(item)));
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<List<PrestadorDTO>>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping(value = { "/prestadores/procedimentos/", "/prestadores/procedimentos" })
+	public ResponseEntity<PrestadorResultDTO> buscarPorParametro(@Valid @RequestBody @NotNull PrestadorProcedimentoDTO parametro) {
+
+		final PrestadorResultDTO response = service.atualizarProcedimentos(parametro);
+		
+		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorResultDTO>(response, HttpStatus.OK);
 	}
 }

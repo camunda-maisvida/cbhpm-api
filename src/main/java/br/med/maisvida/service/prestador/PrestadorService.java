@@ -4,6 +4,8 @@ import java.util.List;
 
 import br.med.maisvida.entity.prestador.Prestador;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
+import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
+import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
 
 public interface PrestadorService {
 
@@ -14,5 +16,7 @@ public interface PrestadorService {
 	List<Prestador> buscarTodos(Integer page, Integer size);
 
 	Prestador buscarPoID(Long id);
+
+	PrestadorResultDTO atualizarProcedimentos(PrestadorProcedimentoDTO prestadorProcedimento);
 
 }

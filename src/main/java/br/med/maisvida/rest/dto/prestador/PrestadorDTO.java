@@ -40,8 +40,7 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 
 	@JsonProperty("endereco")
 	private EnderecoDTO endereco;
-	
-	
+
 	public PrestadorDTO() {
 
 	}
@@ -50,14 +49,6 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 
 		super(entidade);
 		BeanUtils.copyProperties(entidade.getEndereco(), this.getEndereco());
-	}
-
-	public Prestador toEntidade() {
-
-		Prestador prestador = new Prestador();
-		BeanUtils.copyProperties(this, prestador);
-		BeanUtils.copyProperties(this.getEndereco(), prestador.getEndereco());
-		return prestador;
 	}
 
 	/**

@@ -1,10 +1,17 @@
 package br.med.maisvida.entity.prestador;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -12,13 +19,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 import br.med.maisvida.entity.EntidadeBase;
+import br.med.maisvida.entity.Procedimento;
 
 @Entity(name = "Prestador")
 @Table(name = "prestadores", schema = "prestador")
 public class Prestador extends EntidadeBase {
 
 	/** Field serialVersionUID. */
-	private static final long serialVersionUID = 5814586739785833652L;
+	private static final long serialVersionUID = -7540813438296673725L;
 
 	@NotNull
 	@Positive
@@ -51,6 +59,10 @@ public class Prestador extends EntidadeBase {
 
 	@Embedded
 	private Endereco endereco;
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@JoinTable(name = "prestador_procedimentos", schema = "prestador", joinColumns = @JoinColumn(name = "prestador_id", referencedColumnName = "id", nullable = false, updatable = false), inverseJoinColumns = @JoinColumn(name = "procedimento_id", referencedColumnName = "id", nullable = false, updatable = false))
+	private Set<Procedimento> procedimentos = new HashSet<>();
 
 	/**
 	 * Get the value for <code>cnpj</code>
@@ -214,5 +226,35 @@ public class Prestador extends EntidadeBase {
 
 		this.endereco = endereco;
 	}
+
+	/**
+	 * Get the value for <code>procedimentos</code>
+	 *
+	 * @return <code>Set<Procedimento></code>
+	 */
+	public Set<Procedimento> getProcedimentos() {
+
+		return procedimentos;
+	}
+
+	/**
+	 * Set the value for <code>procedimentos</code>.
+	 *
+	 * @param procedimentos
+	 */
+	public void setProcedimentos(Set<Procedimento> procedimentos) {
+
+		this.procedimentos = procedimentos;
+	}
+
+	/*
+	 * public void addProcedimento(Procedimento procedimento) {
+	 * 
+	 * this.procedimentos.add(procedimento); procedimento.getPrestadores().add(this); }
+	 * 
+	 * public void removeProcedimento(Procedimento procedimento) {
+	 * 
+	 * this.procedimentos.remove(procedimento); procedimento.getPrestadores().remove(this); }
+	 */
 
 }

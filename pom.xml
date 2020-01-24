@@ -12,7 +12,7 @@
 	<groupId>br.med.maisvida</groupId>
 	<artifactId>cbhpm-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>cbhpm-api</name>
 	<description>CNES API</description>
 
