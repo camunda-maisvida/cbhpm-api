@@ -1,13 +1,12 @@
 package br.med.maisvida.rest.dto.prestador;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -18,8 +17,8 @@ import br.med.maisvida.rest.dto.EntidadeBaseDTO;
 @JsonRootName(value = "prestador")
 public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 
-	@NotBlank
-	private String cnpj;
+	@NotNull
+	private Long cnpj;
 
 	@NotBlank
 	private String codigoCnes;
@@ -41,30 +40,32 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 
 	@JsonProperty("endereco")
 	private EnderecoDTO endereco;
+	
+	
+	public PrestadorDTO() {
+
+	}
 
 	public PrestadorDTO( Prestador entidade ) {
 
 		super(entidade);
+		BeanUtils.copyProperties(entidade.getEndereco(), this.getEndereco());
 	}
 
 	public Prestador toEntidade() {
 
 		Prestador prestador = new Prestador();
-		try {
-			BeanUtils.copyProperties(prestador, this);
-			BeanUtils.copyProperties(prestador.getEndereco(), this.getEndereco());
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		BeanUtils.copyProperties(this, prestador);
+		BeanUtils.copyProperties(this.getEndereco(), prestador.getEndereco());
 		return prestador;
 	}
 
 	/**
 	 * Get the value for <code>cnpj</code>
 	 *
-	 * @return <code>String</code>
+	 * @return <code>Long</code>
 	 */
-	public String getCnpj() {
+	public Long getCnpj() {
 
 		return cnpj;
 	}
@@ -74,7 +75,7 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 	 *
 	 * @param cnpj
 	 */
-	public void setCnpj(String cnpj) {
+	public void setCnpj(Long cnpj) {
 
 		this.cnpj = cnpj;
 	}
@@ -206,6 +207,9 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 	 */
 	public EnderecoDTO getEndereco() {
 
+		if (this.endereco == null) {
+			this.endereco = new EnderecoDTO();
+		}
 		return endereco;
 	}
 

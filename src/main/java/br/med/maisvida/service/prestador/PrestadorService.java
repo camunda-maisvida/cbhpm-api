@@ -13,4 +13,6 @@ public interface PrestadorService {
 
 	List<Prestador> buscarTodos(Integer page, Integer size);
 
+	Prestador buscarPoID(Long id);
+
 }

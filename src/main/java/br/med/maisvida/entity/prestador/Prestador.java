@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import br.med.maisvida.entity.EntidadeBase;
 
@@ -19,24 +20,25 @@ public class Prestador extends EntidadeBase {
 	/** Field serialVersionUID. */
 	private static final long serialVersionUID = 5814586739785833652L;
 
-	@NotBlank
-	@Column(name = "cnpj", nullable = false)
-	private String cnpj;
+	@NotNull
+	@Positive
+	@Column(name = "cnpj", nullable = false, updatable = false)
+	private Long cnpj;
 
 	@NotBlank
-	@Column(name = "codigo_cnes", nullable = false)
+	@Column(name = "codigo_cnes", nullable = false, updatable = false)
 	private String codigoCnes;
 
 	@NotBlank
-	@Column(name = "codigo_unidade", nullable = false)
+	@Column(name = "codigo_unidade", nullable = false, updatable = false)
 	private String codigoUnidade;
 
 	@NotBlank
-	@Column(name = "nome_fantasia", nullable = false)
+	@Column(name = "nome_fantasia", nullable = false, updatable = false)
 	private String nomeFantasia;
 
 	@NotBlank
-	@Column(name = "nome_empresarial", nullable = false)
+	@Column(name = "nome_empresarial", nullable = false, updatable = false)
 	private String nomeEmpresarial;
 
 	@Email
@@ -44,7 +46,7 @@ public class Prestador extends EntidadeBase {
 	private String email;
 
 	@NotNull
-	@Column(name = "dt_atualizacao", nullable = false)
+	@Column(name = "dt_atualizacao", nullable = false, updatable = false)
 	private LocalDateTime dtAtualizacao;
 
 	@Embedded
@@ -53,9 +55,9 @@ public class Prestador extends EntidadeBase {
 	/**
 	 * Get the value for <code>cnpj</code>
 	 *
-	 * @return <code>String</code>
+	 * @return <code>Long</code>
 	 */
-	public String getCnpj() {
+	public Long getCnpj() {
 
 		return cnpj;
 	}
@@ -65,7 +67,7 @@ public class Prestador extends EntidadeBase {
 	 *
 	 * @param cnpj
 	 */
-	public void setCnpj(String cnpj) {
+	public void setCnpj(Long cnpj) {
 
 		this.cnpj = cnpj;
 	}

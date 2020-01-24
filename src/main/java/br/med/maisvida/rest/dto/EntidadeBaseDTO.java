@@ -1,8 +1,6 @@
 package br.med.maisvida.rest.dto;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.beans.BeanUtils;
 
 import br.med.maisvida.entity.EntidadeBase;
 
@@ -22,11 +20,7 @@ public abstract class EntidadeBaseDTO<T extends EntidadeBase> {
 	public void populate(T entidade) {
 
 		if (entidade != null) {
-			try {
-				BeanUtils.copyProperties(this, entidade);
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
+			BeanUtils.copyProperties(entidade, this);
 		}
 	}
 

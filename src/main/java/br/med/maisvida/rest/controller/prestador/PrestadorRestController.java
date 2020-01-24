@@ -3,6 +3,7 @@ package br.med.maisvida.rest.controller.prestador;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,10 @@ public class PrestadorRestController {
 	private PrestadorService service;
 
 	@PostMapping(value = { "/prestadores/", "/prestadores" })
-	public ResponseEntity<PrestadorDTO> buscarPorParametro(@RequestBody @NotNull PrestadorDTO parametro) {
+	public ResponseEntity<PrestadorDTO> buscarPorParametro(@Valid @RequestBody @NotNull PrestadorDTO parametro) {
 
 		final PrestadorDTO response = service.salvarRetornandoDTO(parametro);
+		
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorDTO>(response, HttpStatus.OK);
 	}
 

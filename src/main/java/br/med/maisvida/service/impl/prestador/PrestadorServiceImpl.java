@@ -1,10 +1,11 @@
 package br.med.maisvida.service.impl.prestador;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
+import javax.validation.Valid;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,20 +27,15 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	@Override
 	@Transactional(readOnly = false)
-	public PrestadorDTO salvarRetornandoDTO(PrestadorDTO prestadorParaSalvar) {
+	public PrestadorDTO salvarRetornandoDTO(@Valid PrestadorDTO prestadorParaSalvar) {
 
 		if (prestadorParaSalvar != null) {
 			Prestador prestadorParaSalvarOuAtualizar = new Prestador();
-			Long idPrestador = prestadorParaSalvar.getId();
-			if (idPrestador != null && idPrestador > 0) {
-				prestadorParaSalvarOuAtualizar = this.repositorio.findById(idPrestador).orElse(new Prestador());
+			if (prestadorParaSalvar.getId() != null && prestadorParaSalvar.getId() > 0) {
+				prestadorParaSalvarOuAtualizar = this.repositorio.findById(prestadorParaSalvar.getId()).orElse(new Prestador());
 			}
-			try {
-				BeanUtils.copyProperties(prestadorParaSalvarOuAtualizar, prestadorParaSalvar);
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			prestadorParaSalvarOuAtualizar.setId(idPrestador);
+
+			BeanUtils.copyProperties(prestadorParaSalvar, prestadorParaSalvarOuAtualizar);
 			Prestador prestadorSalvo = this.repositorio.save(prestadorParaSalvarOuAtualizar);
 			return new PrestadorDTO(prestadorSalvo);
 		}
@@ -72,6 +68,12 @@ public class PrestadorServiceImpl implements PrestadorService {
 			resultado = repositorio.findAll();
 		}
 		return resultado;
+	}
+
+	@Override
+	public Prestador buscarPoID(Long id) {
+
+		return this.repositorio.findById(id).orElse(null);
 	}
 
 	// TODO extrair para Utilitario
