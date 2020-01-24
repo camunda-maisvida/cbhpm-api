@@ -3,6 +3,8 @@ package br.med.maisvida.service.impl.prestador;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
@@ -24,6 +26,9 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	@Autowired
 	private PrestadorRepositorio repositorio;
+	
+	@PersistenceContext
+    private EntityManager em;
 
 	@Override
 	@Transactional(readOnly = false)
@@ -32,12 +37,16 @@ public class PrestadorServiceImpl implements PrestadorService {
 		if (prestadorParaSalvar != null) {
 			Prestador prestadorParaSalvarOuAtualizar = new Prestador();
 			if (prestadorParaSalvar.getId() != null && prestadorParaSalvar.getId() > 0) {
-				prestadorParaSalvarOuAtualizar = this.repositorio.findById(prestadorParaSalvar.getId()).orElse(new Prestador());
+				prestadorParaSalvarOuAtualizar = this.repositorio.findById(prestadorParaSalvar.getId())
+						.orElseThrow(() -> new IllegalStateException("Prestador não encontrado com o id: "+prestadorParaSalvar.getId()));
 			}
 
 			BeanUtils.copyProperties(prestadorParaSalvar, prestadorParaSalvarOuAtualizar);
+			BeanUtils.copyProperties(prestadorParaSalvar.getEndereco(), prestadorParaSalvarOuAtualizar.getEndereco());
 			Prestador prestadorSalvo = this.repositorio.save(prestadorParaSalvarOuAtualizar);
-			return new PrestadorDTO(prestadorSalvo);
+			em.flush();
+			em.clear();
+			return new PrestadorDTO(this.repositorio.findById(prestadorSalvo.getId()).get());
 		}
 		return null;
 	}
