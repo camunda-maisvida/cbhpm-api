@@ -37,4 +37,47 @@ public class Grupo extends EntidadeCodDescBase {
 		this.capitulo = capitulo;
 	}
 
+	/**
+	 * Default description: <br>
+	 * <br>
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ( ( capitulo == null ) ? 0 : capitulo.hashCode() );
+		return result;
+	}
+
+	/**
+	 * Default description: <br>
+	 * <br>
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Grupo other = (Grupo) obj;
+		if (capitulo == null) {
+			if (other.capitulo != null)
+				return false;
+		} else if (!capitulo.equals(other.capitulo))
+			return false;
+		return true;
+	}
+
 }

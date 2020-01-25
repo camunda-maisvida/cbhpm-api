@@ -1,6 +1,8 @@
 package br.med.maisvida.rest.dto.prestador;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -8,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -40,6 +43,9 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 
 	@JsonProperty("endereco")
 	private EnderecoDTO endereco;
+	
+	@JsonInclude(JsonInclude.Include.NON_EMPTY) 
+	private Set<Long> procedimentosId = new HashSet<>();
 
 	public PrestadorDTO() {
 
@@ -212,6 +218,16 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 	public void setEndereco(EnderecoDTO endereco) {
 
 		this.endereco = endereco;
+	}
+
+	public Set<Long> getProcedimentosId() {
+
+		return procedimentosId;
+	}
+
+	public void setProcedimentosId(Set<Long> procedimentosId) {
+
+		this.procedimentosId = procedimentosId;
 	}
 
 }

@@ -63,4 +63,53 @@ public class Tabela extends EntidadeBase {
 		this.descricao = descricao;
 	}
 
+	/**
+	 * Default description: <br>
+	 * <br>
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ( ( codigo == null ) ? 0 : codigo.hashCode() );
+		result = prime * result + ( ( descricao == null ) ? 0 : descricao.hashCode() );
+		return result;
+	}
+
+	/**
+	 * Default description: <br>
+	 * <br>
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tabela other = (Tabela) obj;
+		if (codigo == null) {
+			if (other.codigo != null)
+				return false;
+		} else if (!codigo.equals(other.codigo))
+			return false;
+		if (descricao == null) {
+			if (other.descricao != null)
+				return false;
+		} else if (!descricao.equals(other.descricao))
+			return false;
+		return true;
+	}
+
 }

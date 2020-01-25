@@ -42,7 +42,7 @@ public class PrestadorRestController {
 
 		final List<Prestador> entidades = service.buscarTodos(page, size);
 		final List<PrestadorDTO> response = new ArrayList<>();
-		entidades.stream().forEach(item -> response.add(new PrestadorDTO(item)));
+		entidades.stream().forEach(item -> response.add(new PrestadorResultDTO(item)));
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<List<PrestadorDTO>>(response, HttpStatus.OK);
 	}
 	

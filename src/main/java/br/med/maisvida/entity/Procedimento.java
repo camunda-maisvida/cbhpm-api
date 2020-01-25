@@ -1,20 +1,15 @@
 package br.med.maisvida.entity;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import br.med.maisvida.entity.prestador.Prestador;
 
 @Entity(name = "Procedimento")
 @Table(name = "procedimentos", schema = "public")
@@ -43,8 +38,15 @@ public class Procedimento extends EntidadeCodDescBase {
 	@JoinColumn(name = "subgrupo_id", nullable = false)
 	private SubGrupo subGrupo;
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "procedimentos")
-	private Set<Prestador> prestadores = new HashSet<>();;
+	
+	public Procedimento() {
+
+	}
+
+	public Procedimento( Long id ) {
+
+		super.setId(id);
+	}
 
 	/**
 	 * Get the value for <code>porte</code>
@@ -144,26 +146,6 @@ public class Procedimento extends EntidadeCodDescBase {
 	public void setSubGrupo(SubGrupo subGrupo) {
 
 		this.subGrupo = subGrupo;
-	}
-
-	/**
-	 * Get the value for <code>prestadores</code>
-	 *
-	 * @return <code>Set<Prestador></code>
-	 */
-	public Set<Prestador> getPrestadores() {
-
-		return prestadores;
-	}
-
-	/**
-	 * Set the value for <code>prestadores</code>.
-	 *
-	 * @param prestadores
-	 */
-	public void setPrestadores(Set<Prestador> prestadores) {
-
-		this.prestadores = prestadores;
 	}
 
 }

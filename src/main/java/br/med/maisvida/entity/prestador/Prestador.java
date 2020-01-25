@@ -3,20 +3,21 @@ package br.med.maisvida.entity.prestador;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+
+import org.springframework.util.CollectionUtils;
 
 import br.med.maisvida.entity.EntidadeBase;
 import br.med.maisvida.entity.Procedimento;
@@ -60,9 +61,8 @@ public class Prestador extends EntidadeBase {
 	@Embedded
 	private Endereco endereco;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-	@JoinTable(name = "prestador_procedimentos", schema = "prestador", joinColumns = @JoinColumn(name = "prestador_id", referencedColumnName = "id", nullable = false, updatable = false), inverseJoinColumns = @JoinColumn(name = "procedimento_id", referencedColumnName = "id", nullable = false, updatable = false))
-	private Set<Procedimento> procedimentos = new HashSet<>();
+	@OneToMany(mappedBy = "prestador", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true)
+	private Set<PrestadorProcedimento> prestadorProcedimentos = new HashSet<>();
 
 	/**
 	 * Get the value for <code>cnpj</code>
@@ -228,33 +228,108 @@ public class Prestador extends EntidadeBase {
 	}
 
 	/**
-	 * Get the value for <code>procedimentos</code>
+	 * Get the value for <code>prestadorProcedimentos</code>
 	 *
-	 * @return <code>Set<Procedimento></code>
+	 * @return <code>Set<PrestadorProcedimento></code>
 	 */
-	public Set<Procedimento> getProcedimentos() {
+	public Set<PrestadorProcedimento> getPrestadorProcedimentos() {
 
-		return procedimentos;
+		return prestadorProcedimentos;
 	}
 
 	/**
-	 * Set the value for <code>procedimentos</code>.
+	 * Set the value for <code>prestadorProcedimentos</code>.
 	 *
-	 * @param procedimentos
+	 * @param prestadorProcedimentos
 	 */
-	public void setProcedimentos(Set<Procedimento> procedimentos) {
+	public void setPrestadorProcedimentos(Set<PrestadorProcedimento> prestadorProcedimentos) {
 
-		this.procedimentos = procedimentos;
+		this.prestadorProcedimentos = prestadorProcedimentos;
 	}
 
-	/*
-	 * public void addProcedimento(Procedimento procedimento) {
-	 * 
-	 * this.procedimentos.add(procedimento); procedimento.getPrestadores().add(this); }
-	 * 
-	 * public void removeProcedimento(Procedimento procedimento) {
-	 * 
-	 * this.procedimentos.remove(procedimento); procedimento.getPrestadores().remove(this); }
+	public Set<Procedimento> getProcedimentos() {
+
+		Set<Procedimento> result = new HashSet<>();
+		if (!CollectionUtils.isEmpty(this.prestadorProcedimentos)) {
+
+			result = this.prestadorProcedimentos.stream().map(PrestadorProcedimento::getProcedimento).collect(Collectors.toSet());
+		}
+		return result;
+	}
+
+	public void adicionarProcedimentos(Set<Long> procedimentosAdicionar) {
+
+		if (!CollectionUtils.isEmpty(procedimentosAdicionar)) {
+			
+			Set<Long> idsProcedimentos = this.prestadorProcedimentos.stream()
+					.map(m -> m.getProcedimento().getId())
+					.collect(Collectors.toSet());
+			
+			procedimentosAdicionar.removeAll(idsProcedimentos);
+			
+			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosAdicionar.stream()
+					.map(idProcedimento -> new PrestadorProcedimento(this, new Procedimento(idProcedimento)))
+					.collect(Collectors.toSet());
+			
+			this.prestadorProcedimentos.addAll(prestadorProcedimentos);
+		}
+
+	}
+
+	public void sobreporProcedimentos(Set<Long> procedimentosSobrepor) {
+		
+		if (!CollectionUtils.isEmpty(procedimentosSobrepor)) {
+			
+			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosSobrepor.stream()
+					.map(idProcedimento -> new PrestadorProcedimento(this, new Procedimento(idProcedimento)))
+					.collect(Collectors.toSet());
+			this.prestadorProcedimentos.clear();
+			this.prestadorProcedimentos.addAll(prestadorProcedimentos);
+		}
+		
+	}
+
+	/**
+	 * Default description: <br>
+	 * <br>
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
+	public int hashCode() {
+
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ( ( cnpj == null ) ? 0 : cnpj.hashCode() );
+		return result;
+	}
+
+	/**
+	 * Default description: <br>
+	 * <br>
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Prestador other = (Prestador) obj;
+		if (cnpj == null) {
+			if (other.cnpj != null)
+				return false;
+		} else if (!cnpj.equals(other.cnpj))
+			return false;
+		return true;
+	}
 
 }

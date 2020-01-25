@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import br.med.maisvida.entity.prestador.Prestador;
+import br.med.maisvida.repository.prestador.PrestadorProcedimentoRepositorio;
 import br.med.maisvida.repository.prestador.PrestadorRepositorio;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
@@ -31,6 +32,9 @@ public class PrestadorServiceImpl implements PrestadorService {
 	@Autowired
 	private PrestadorRepositorio repositorio;
 
+	@Autowired
+	private PrestadorProcedimentoRepositorio prestadorProcedimentoRepositorio;
+
 	@PersistenceContext
 	private EntityManager em;
 
@@ -41,15 +45,17 @@ public class PrestadorServiceImpl implements PrestadorService {
 		if (prestadorParaSalvar != null) {
 			Prestador prestadorParaSalvarOuAtualizar = new Prestador();
 			if (prestadorParaSalvar.getId() != null && prestadorParaSalvar.getId() > 0) {
-				prestadorParaSalvarOuAtualizar = this.repositorio.findById(prestadorParaSalvar.getId()).orElseThrow(() -> new IllegalStateException("Prestador não encontrado com o id: " + prestadorParaSalvar.getId()));
+				prestadorParaSalvarOuAtualizar = this.repositorio.findById(prestadorParaSalvar.getId())
+						.orElseThrow(() -> new IllegalStateException("Prestador não encontrado com o id: " + prestadorParaSalvar.getId()));
 			}
 
 			BeanUtils.copyProperties(prestadorParaSalvar, prestadorParaSalvarOuAtualizar);
 			BeanUtils.copyProperties(prestadorParaSalvar.getEndereco(), prestadorParaSalvarOuAtualizar.getEndereco());
+			prestadorParaSalvarOuAtualizar.sobreporProcedimentos(prestadorParaSalvar.getProcedimentosId());
 			Prestador prestadorSalvo = this.repositorio.save(prestadorParaSalvarOuAtualizar);
-			em.flush();
-			em.clear();
-			return new PrestadorDTO(this.repositorio.findById(prestadorSalvo.getId()).get());
+			
+			flushAndClear();
+			return new PrestadorResultDTO(this.repositorio.findById(prestadorSalvo.getId()).get());
 		}
 		return null;
 	}
@@ -83,26 +89,36 @@ public class PrestadorServiceImpl implements PrestadorService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public PrestadorResultDTO atualizarProcedimentos(PrestadorProcedimentoDTO prestadorProcedimento) {
 
 		PrestadorResultDTO result = null;
 		if (prestadorProcedimento != null && temNumeroValido(prestadorProcedimento.getId())) {
 			Prestador prestador = this.repositorio.findById(prestadorProcedimento.getId()).orElseThrow(() -> new IllegalStateException("Prestador não encontrado com o id: " + prestadorProcedimento.getId()));
+
+			// Sobrepondo os procedimentos
 			if (!CollectionUtils.isEmpty(prestadorProcedimento.getProcedimentosSobrepor())) {
-
+				prestador.sobreporProcedimentos(prestadorProcedimento.getProcedimentosSobrepor());
+				this.repositorio.save(prestador);
+			}
+			// Deletando todos os procedimentos
+			else if (BooleanUtils.isTrue(prestadorProcedimento.getRemoverTodos())) {
+				this.prestadorProcedimentoRepositorio.deletarPorPrestador(prestador.getId());
 			} else {
+				// Adicionando procedimentos
 				if (!CollectionUtils.isEmpty(prestadorProcedimento.getProcedimentosAdicionar())) {
+					prestador.adicionarProcedimentos(prestadorProcedimento.getProcedimentosAdicionar());
+					this.repositorio.save(prestador);
 
 				}
-				if (BooleanUtils.isTrue(prestadorProcedimento.getRemoverTodos())) {
-					prestador.setProcedimentos(null);
-					this.salvar(prestador);
-				}
+
+				// Removendo procedimentos
 				if (!CollectionUtils.isEmpty(prestadorProcedimento.getProcedimentosRemover())) {
-
+					this.prestadorProcedimentoRepositorio.deletarPorProcedimentos(prestadorProcedimento.getProcedimentosRemover().toArray(new Long[] {}));
 				}
 			}
-
+			flushAndClear();
+			prestador = this.buscarPoID(prestador.getId());
 			result = new PrestadorResultDTO(prestador);
 		}
 		return result;
@@ -118,6 +134,12 @@ public class PrestadorServiceImpl implements PrestadorService {
 	private boolean temNumeroValido(Number valor) {
 
 		return valor != null && valor.intValue() >= 0;
+	}
+
+	private void flushAndClear() {
+
+		em.flush();
+		em.clear();
 	}
 
 }
