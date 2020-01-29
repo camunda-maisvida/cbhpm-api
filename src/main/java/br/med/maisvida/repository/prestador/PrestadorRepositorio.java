@@ -8,4 +8,6 @@ import br.med.maisvida.repository.RepositorioBase;
 @Repository
 public interface PrestadorRepositorio extends RepositorioBase<Prestador> {
 
+	Prestador findByCnpj(Long cnpj);
+
 }

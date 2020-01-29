@@ -19,4 +19,6 @@ public interface PrestadorService {
 
 	PrestadorResultDTO atualizarProcedimentos(PrestadorProcedimentoDTO prestadorProcedimento);
 
+	PrestadorDTO buscarDTOPorCnpj(String cnpj);
+
 }

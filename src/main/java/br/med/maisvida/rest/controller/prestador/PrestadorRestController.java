@@ -6,11 +6,13 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.br.CNPJ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +35,7 @@ public class PrestadorRestController {
 	public ResponseEntity<PrestadorDTO> buscarPorParametro(@Valid @RequestBody @NotNull PrestadorDTO parametro) {
 
 		final PrestadorDTO response = service.salvarRetornandoDTO(parametro);
-		
+
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorDTO>(response, HttpStatus.OK);
 	}
 
@@ -45,12 +47,19 @@ public class PrestadorRestController {
 		entidades.stream().forEach(item -> response.add(new PrestadorResultDTO(item)));
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<List<PrestadorDTO>>(response, HttpStatus.OK);
 	}
-	
+
+	@GetMapping("/prestadores/cnpj/{cnpj}")
+	public ResponseEntity<PrestadorDTO> buscarPorCnpj(@PathVariable(value = "cnpj") @NotNull @CNPJ String cnpj) {
+
+		final PrestadorDTO response = service.buscarDTOPorCnpj(cnpj);
+		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorDTO>(response, HttpStatus.OK);
+	}
+
 	@PostMapping(value = { "/prestadores/procedimentos/", "/prestadores/procedimentos" })
 	public ResponseEntity<PrestadorResultDTO> buscarPorParametro(@Valid @RequestBody @NotNull PrestadorProcedimentoDTO parametro) {
 
 		final PrestadorResultDTO response = service.atualizarProcedimentos(parametro);
-		
+
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorResultDTO>(response, HttpStatus.OK);
 	}
 }

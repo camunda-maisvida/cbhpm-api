@@ -1,5 +1,8 @@
 package br.med.maisvida.service.impl.prestador;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,12 +21,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.med.maisvida.entity.prestador.Prestador;
 import br.med.maisvida.repository.prestador.PrestadorProcedimentoRepositorio;
 import br.med.maisvida.repository.prestador.PrestadorRepositorio;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
+import br.med.maisvida.service.cnes.CnesService;
 import br.med.maisvida.service.prestador.PrestadorService;
 
 @Service
@@ -31,6 +40,9 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	@Autowired
 	private PrestadorRepositorio repositorio;
+
+	@Autowired
+	private CnesService cnesService;
 
 	@Autowired
 	private PrestadorProcedimentoRepositorio prestadorProcedimentoRepositorio;
@@ -130,16 +142,97 @@ public class PrestadorServiceImpl implements PrestadorService {
 		return this.repositorio.findById(id).orElse(null);
 	}
 
+	@Override
+	public PrestadorDTO buscarDTOPorCnpj(String cnpj) {
+		PrestadorDTO result = null;
+		if(StringUtils.isNotBlank(cnpj)) {
+			final Prestador prestador = this.buscarPorCnpj(Long.valueOf(cnpj));
+			if(prestador != null) {
+				result = new PrestadorDTO(prestador);
+			}else {
+				final String jsonResult = this.cnesService.buscarPorCnpj(cnpj);
+				result = getPrestadorDTOFromJsonString(jsonResult);
+			}
+		}
+		return result;
+	}
+
+	public Prestador buscarPorCnpj(Long cnpj) {
+		return this.repositorio.findByCnpj(cnpj);
+		
+	}
+	
+	private PrestadorDTO getPrestadorDTOFromJsonString(String jsonResult) {
+		PrestadorDTO result = null;
+		if(StringUtils.isNotBlank(jsonResult)) {
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				JsonNode readTree = objectMapper.readTree(jsonResult);
+				Long cnpjResult = readTree.get("cnpj").get("numeroCNPJ").asLong();
+				String codigoCNES = readTree.get("codigoCNES").get("codigo").asText();
+				String codigoUnidade = readTree.get("codigoUnidade").get("codigo").asText();
+				String nomeFantasia = readTree.get("nomeFantasia").get("nome").asText();
+				String nomeEmpresarial = readTree.get("nomeEmpresarial").get("nome").asText();
+				
+				String email = getValueFromJsonNode(readTree.get("email").get("descricaoEmail"));
+				
+				
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+							
+				LocalDateTime dataAtualizacao = ZonedDateTime.parse(readTree.get("dataAtualizacao").asText(), formatter).toLocalDateTime();
+				
+				JsonNode endereco = readTree.get("endereco");
+				String logradouro = getValueFromJsonNode(endereco.get("nomeLogradouro"));
+				String numero = getValueFromJsonNode(endereco.get("numero"));
+				String bairro = getValueFromJsonNode(endereco.get("bairro").get("descricaoBairro"));
+				
+				JsonNode municipio = readTree.get("endereco").get("municipio");
+				String cidade = getValueFromJsonNode(municipio.get("nomeMunicipio"));
+				String uf = getValueFromJsonNode(municipio.get("uf").get("siglaUF"));
+				
+				String cep = getValueFromJsonNode(endereco.get("cep").get("numeroCEP"));
+				
+				result = new PrestadorDTO();
+				result.setCnpj(cnpjResult);
+				result.setCodigoCnes(codigoCNES);
+				result.setCodigoUnidade(codigoUnidade);
+				result.setNomeFantasia(nomeFantasia);
+				result.setNomeEmpresarial(nomeEmpresarial);
+				result.setEmail(email);
+				result.setDtAtualizacao(dataAtualizacao);
+				result.getEndereco().setLogradouro(logradouro);
+				result.getEndereco().setNumero(numero);
+				result.getEndereco().setBairro(bairro);
+				result.getEndereco().setCidade(cidade);
+				result.getEndereco().setUf(uf);
+				result.getEndereco().setCep(cep);
+				
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	private String getValueFromJsonNode(JsonNode jsonNode) {
+		if(jsonNode != null) {
+			return jsonNode.asText();
+		}
+		
+		return null;
+	}
+	
 	// TODO extrair para Utilitario
 	private boolean temNumeroValido(Number valor) {
 
-		return valor != null && valor.intValue() >= 0;
+		return valor != null && valor.longValue() >= 0;
 	}
 
 	private void flushAndClear() {
-
 		em.flush();
 		em.clear();
 	}
+
 
 }
