@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import br.med.maisvida.entity.EntidadeBase;
 import br.med.maisvida.entity.Procedimento;
+import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoItemDTO;
 
 @Entity(name = "Prestador")
 @Table(name = "prestadores", schema = "prestador")
@@ -257,7 +258,7 @@ public class Prestador extends EntidadeBase {
 		return result;
 	}
 
-	public void adicionarProcedimentos(Set<Long> procedimentosAdicionar) {
+	public void adicionarProcedimentos(Set<PrestadorProcedimentoItemDTO> procedimentosAdicionar) {
 
 		if (!CollectionUtils.isEmpty(procedimentosAdicionar)) {
 			
@@ -265,10 +266,10 @@ public class Prestador extends EntidadeBase {
 					.map(m -> m.getProcedimento().getId())
 					.collect(Collectors.toSet());
 			
-			procedimentosAdicionar.removeAll(idsProcedimentos);
+			procedimentosAdicionar.removeIf(item -> idsProcedimentos.contains(item.getId()));
 			
 			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosAdicionar.stream()
-					.map(idProcedimento -> new PrestadorProcedimento(this, new Procedimento(idProcedimento)))
+					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getId()), item.getValor()))
 					.collect(Collectors.toSet());
 			
 			this.prestadorProcedimentos.addAll(prestadorProcedimentos);
@@ -276,12 +277,12 @@ public class Prestador extends EntidadeBase {
 
 	}
 
-	public void sobreporProcedimentos(Set<Long> procedimentosSobrepor) {
+	public void sobreporProcedimentos(Set<PrestadorProcedimentoItemDTO> procedimentosSobrepor) {
 		
 		if (!CollectionUtils.isEmpty(procedimentosSobrepor)) {
 			
 			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosSobrepor.stream()
-					.map(idProcedimento -> new PrestadorProcedimento(this, new Procedimento(idProcedimento)))
+					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getId()), item.getValor()))
 					.collect(Collectors.toSet());
 			this.prestadorProcedimentos.clear();
 			this.prestadorProcedimentos.addAll(prestadorProcedimentos);

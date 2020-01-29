@@ -17,6 +17,6 @@ public interface PrestadorProcedimentoRepositorio extends JpaRepository<Prestado
 
 	@Modifying
 	@Query("delete from PrestadorProcedimento pp where pp.procedimento.id in :idProcedimentos")
-	public void deletarPorProcedimentos(Long ... idProcedimentos);
+	public void deletarPorProcedimentos(long ... idProcedimentos);
 
 }

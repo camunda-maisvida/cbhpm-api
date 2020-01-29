@@ -43,8 +43,8 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 
 	@JsonProperty("endereco")
 	private EnderecoDTO endereco;
-	
-	@JsonInclude(JsonInclude.Include.NON_EMPTY) 
+
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private Set<Long> procedimentosId = new HashSet<>();
 
 	public PrestadorDTO() {
@@ -218,16 +218,6 @@ public class PrestadorDTO extends EntidadeBaseDTO<Prestador> {
 	public void setEndereco(EnderecoDTO endereco) {
 
 		this.endereco = endereco;
-	}
-
-	public Set<Long> getProcedimentosId() {
-
-		return procedimentosId;
-	}
-
-	public void setProcedimentosId(Set<Long> procedimentosId) {
-
-		this.procedimentosId = procedimentosId;
 	}
 
 }

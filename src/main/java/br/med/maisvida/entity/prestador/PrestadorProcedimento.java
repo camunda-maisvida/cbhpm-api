@@ -1,11 +1,16 @@
 package br.med.maisvida.entity.prestador;
 
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import br.med.maisvida.entity.Procedimento;
 
@@ -24,14 +29,20 @@ public class PrestadorProcedimento {
 	@MapsId("procedimentoId")
 	private Procedimento procedimento;
 
+	@NotNull
+	@Positive
+	@Column(name = "valor", nullable = false, precision = 9, scale = 2)
+	private BigDecimal valor;
+
 	public PrestadorProcedimento() {
 
 	}
 
-	public PrestadorProcedimento( Prestador prestador, Procedimento procedimento ) {
+	public PrestadorProcedimento( Prestador prestador, Procedimento procedimento, BigDecimal valor ) {
 
 		this.prestador = prestador;
 		this.procedimento = procedimento;
+		this.valor = valor;
 		this.id = new PrestadorProcedimentoPK(prestador, procedimento);
 	}
 
@@ -96,6 +107,26 @@ public class PrestadorProcedimento {
 	}
 
 	/**
+	 * Get the value for <code>valor</code>
+	 *
+	 * @return <code>BigDecimal</code>
+	 */
+	public BigDecimal getValor() {
+
+		return valor;
+	}
+
+	/**
+	 * Set the value for <code>valor</code>.
+	 *
+	 * @param valor
+	 */
+	public void setValor(BigDecimal valor) {
+
+		this.valor = valor;
+	}
+
+	/**
 	 * Default description: <br>
 	 * <br>
 	 *
@@ -139,7 +170,8 @@ public class PrestadorProcedimento {
 	}
 
 	/**
-	 * Default description: <br> <br>
+	 * Default description: <br>
+	 * <br>
 	 *
 	 * {@inheritDoc}
 	 *
@@ -150,7 +182,5 @@ public class PrestadorProcedimento {
 
 		return "PrestadorProcedimento [" + ( id != null ? "id=" + id : "" ) + "]";
 	}
-	
-	
 
 }

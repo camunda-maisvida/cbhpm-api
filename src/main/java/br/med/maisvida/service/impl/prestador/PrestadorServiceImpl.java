@@ -30,6 +30,7 @@ import br.med.maisvida.repository.prestador.PrestadorProcedimentoRepositorio;
 import br.med.maisvida.repository.prestador.PrestadorRepositorio;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
+import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoItemDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
 import br.med.maisvida.service.cnes.CnesService;
 import br.med.maisvida.service.prestador.PrestadorService;
@@ -63,7 +64,6 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 			BeanUtils.copyProperties(prestadorParaSalvar, prestadorParaSalvarOuAtualizar);
 			BeanUtils.copyProperties(prestadorParaSalvar.getEndereco(), prestadorParaSalvarOuAtualizar.getEndereco());
-			prestadorParaSalvarOuAtualizar.sobreporProcedimentos(prestadorParaSalvar.getProcedimentosId());
 			Prestador prestadorSalvo = this.repositorio.save(prestadorParaSalvarOuAtualizar);
 			
 			flushAndClear();
@@ -126,7 +126,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 				// Removendo procedimentos
 				if (!CollectionUtils.isEmpty(prestadorProcedimento.getProcedimentosRemover())) {
-					this.prestadorProcedimentoRepositorio.deletarPorProcedimentos(prestadorProcedimento.getProcedimentosRemover().toArray(new Long[] {}));
+					this.prestadorProcedimentoRepositorio.deletarPorProcedimentos(prestadorProcedimento.getProcedimentosRemover().stream().mapToLong(PrestadorProcedimentoItemDTO::getId).toArray());
 				}
 			}
 			flushAndClear();

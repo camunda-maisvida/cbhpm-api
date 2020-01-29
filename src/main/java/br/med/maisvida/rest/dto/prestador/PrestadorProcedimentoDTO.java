@@ -11,11 +11,11 @@ import br.med.maisvida.rest.dto.EntidadeBaseDTO;
 @JsonRootName(value = "prestador")
 public class PrestadorProcedimentoDTO extends EntidadeBaseDTO<Prestador> {
 
-	private Set<Long> procedimentosAdicionar = new HashSet<>();
+	private Set<PrestadorProcedimentoItemDTO> procedimentosAdicionar = new HashSet<>();
 
-	private Set<Long> procedimentosRemover = new HashSet<>();
+	private Set<PrestadorProcedimentoItemDTO> procedimentosRemover = new HashSet<>();
 
-	private Set<Long> procedimentosSobrepor = new HashSet<>();
+	private Set<PrestadorProcedimentoItemDTO> procedimentosSobrepor = new HashSet<>();
 
 	private Boolean removerTodos;
 
@@ -26,9 +26,9 @@ public class PrestadorProcedimentoDTO extends EntidadeBaseDTO<Prestador> {
 	/**
 	 * Get the value for <code>procedimentosAdicionar</code>
 	 *
-	 * @return <code>Set<Long></code>
+	 * @return <code>Set<PrestadorProcedimentoItemDTO></code>
 	 */
-	public Set<Long> getProcedimentosAdicionar() {
+	public Set<PrestadorProcedimentoItemDTO> getProcedimentosAdicionar() {
 
 		return procedimentosAdicionar;
 	}
@@ -38,7 +38,7 @@ public class PrestadorProcedimentoDTO extends EntidadeBaseDTO<Prestador> {
 	 *
 	 * @param procedimentosAdicionar
 	 */
-	public void setProcedimentosAdicionar(Set<Long> procedimentosAdicionar) {
+	public void setProcedimentosAdicionar(Set<PrestadorProcedimentoItemDTO> procedimentosAdicionar) {
 
 		this.procedimentosAdicionar = procedimentosAdicionar;
 	}
@@ -46,9 +46,9 @@ public class PrestadorProcedimentoDTO extends EntidadeBaseDTO<Prestador> {
 	/**
 	 * Get the value for <code>procedimentosRemover</code>
 	 *
-	 * @return <code>Set<Long></code>
+	 * @return <code>Set<PrestadorProcedimentoItemDTO></code>
 	 */
-	public Set<Long> getProcedimentosRemover() {
+	public Set<PrestadorProcedimentoItemDTO> getProcedimentosRemover() {
 
 		return procedimentosRemover;
 	}
@@ -58,7 +58,7 @@ public class PrestadorProcedimentoDTO extends EntidadeBaseDTO<Prestador> {
 	 *
 	 * @param procedimentosRemover
 	 */
-	public void setProcedimentosRemover(Set<Long> procedimentosRemover) {
+	public void setProcedimentosRemover(Set<PrestadorProcedimentoItemDTO> procedimentosRemover) {
 
 		this.procedimentosRemover = procedimentosRemover;
 	}
@@ -66,9 +66,9 @@ public class PrestadorProcedimentoDTO extends EntidadeBaseDTO<Prestador> {
 	/**
 	 * Get the value for <code>procedimentosSobrepor</code>
 	 *
-	 * @return <code>Set<Long></code>
+	 * @return <code>Set<PrestadorProcedimentoItemDTO></code>
 	 */
-	public Set<Long> getProcedimentosSobrepor() {
+	public Set<PrestadorProcedimentoItemDTO> getProcedimentosSobrepor() {
 
 		return procedimentosSobrepor;
 	}
@@ -78,7 +78,7 @@ public class PrestadorProcedimentoDTO extends EntidadeBaseDTO<Prestador> {
 	 *
 	 * @param procedimentosSobrepor
 	 */
-	public void setProcedimentosSobrepor(Set<Long> procedimentosSobrepor) {
+	public void setProcedimentosSobrepor(Set<PrestadorProcedimentoItemDTO> procedimentosSobrepor) {
 
 		this.procedimentosSobrepor = procedimentosSobrepor;
 	}
