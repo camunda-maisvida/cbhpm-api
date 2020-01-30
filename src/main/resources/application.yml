@@ -8,3 +8,17 @@ spring:
     username: postgres
   jpa:
     show-sql: true
+    
+  mail:
+    defaultEncoding: UTF-8
+    host: smtp.gmail.com
+    username: smtp.maisvida@gmail.com
+    password: qwer!1234    
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp    

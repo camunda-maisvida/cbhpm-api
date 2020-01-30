@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.med.maisvida.entity.prestador.Prestador;
+import br.med.maisvida.rest.dto.prestador.NotificarRejeicaoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
@@ -61,6 +62,14 @@ public class PrestadorRestController {
 		final PrestadorResultDTO response = service.atualizarProcedimentos(parametro);
 
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorResultDTO>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping(value = { "/prestadores/rejeitar/", "/prestadores/rejeitar" })
+	public ResponseEntity<?> rejetiar(@Valid @RequestBody @NotNull NotificarRejeicaoDTO rejeicao) {
+
+		boolean ok = service.notificarRejeicao(rejeicao);
+
+		return ok ? ResponseEntity.ok().build() :ResponseEntity.badRequest().body("Não foi possível realizar esta operação. Contato o suporte!");
 	}
 	
 }

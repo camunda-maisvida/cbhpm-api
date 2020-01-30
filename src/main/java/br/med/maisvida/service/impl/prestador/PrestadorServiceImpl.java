@@ -28,12 +28,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.med.maisvida.entity.prestador.Prestador;
 import br.med.maisvida.repository.prestador.PrestadorProcedimentoRepositorio;
 import br.med.maisvida.repository.prestador.PrestadorRepositorio;
+import br.med.maisvida.rest.dto.email.EmailDTO;
+import br.med.maisvida.rest.dto.prestador.NotificarRejeicaoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorFullResultDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoItemDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
 import br.med.maisvida.service.cnes.CnesService;
+import br.med.maisvida.service.email.EnviadorDeEmailService;
 import br.med.maisvida.service.prestador.PrestadorService;
 
 @Service
@@ -46,8 +49,12 @@ public class PrestadorServiceImpl implements PrestadorService {
 	@Autowired
 	private CnesService cnesService;
 
+	//TODO extrair para SERVICE
 	@Autowired
 	private PrestadorProcedimentoRepositorio prestadorProcedimentoRepositorio;
+
+	@Autowired
+	private EnviadorDeEmailService enviadorDeEmailService;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -233,6 +240,46 @@ public class PrestadorServiceImpl implements PrestadorService {
 	private void flushAndClear() {
 		em.flush();
 		em.clear();
+	}
+
+	@Override
+	public boolean notificarRejeicao(NotificarRejeicaoDTO rejeicao) {
+
+		if(rejeicao != null && rejeicao.temParametrosPreenchidos()) {
+			Prestador prestador = this.buscarPorCnpj(Long.valueOf(rejeicao.getCnpj()));
+			StringBuilder texto = new StringBuilder();
+			
+			texto.append("Olá <b>").append(prestador.getNomeEmpresarial()).append("</b>!").append("<br>");
+			texto.append("Sua solicitação foi analizada e infelizmente foi rejeitada.").append("<br>");
+			texto.append("Detalhe:").append("<br>");
+			texto.append("<b>").append("CNPJ").append(" :</b> ").append(rejeicao.getCnpj()).append("<br>");
+			texto.append("<b>").append("Motivo").append(" :</b> ").append(rejeicao.getMotivo()).append("<br>");
+			texto.append("	<b>").append("Procedimentos Selecionados").append(" :</b> ").append("<br>");
+			texto.append("<table border=\"1|0\"");
+			texto.append("<tr><th>Descrição</th><th>Valor</th><th>Valor Proposto</th></tr>");
+			prestador.getPrestadorProcedimentos().stream().forEach(item -> {
+				texto.append("<tr>");
+					texto.append("<td>").append(item.getProcedimento().getCodigoExtendido() + " - "+item.getProcedimento().getDescricao()).append("</td>");
+					texto.append("<td>").append(item.getValor()).append("</td>");
+					texto.append("<td>").append(item.getValorProposto()).append("</td>");
+				texto.append("</tr>");
+			});
+			
+			texto.append("</table>");
+			texto.append("-----------").append("<br>");
+			texto.append("<b>Suporte Mais Vida</b>");
+			
+			
+			EmailDTO email = EmailDTO.EmailBuilder.newBuild()
+					.from("suporte.maisvida@gmail.com")
+					.to("rodolfo.maisvida@gmail.com","wagner.maisvida@gmail.com","marcio.maisvida@gmail.com")
+					.subject("[Notificação] Rejeição de Solicitação Prestação de Serviço")
+					.content(texto.toString())
+					.build();
+			enviadorDeEmailService.enviar(email);
+			return true;
+		}
+		return false;
 	}
 
 
