@@ -266,10 +266,10 @@ public class Prestador extends EntidadeBase {
 					.map(m -> m.getProcedimento().getId())
 					.collect(Collectors.toSet());
 			
-			procedimentosAdicionar.removeIf(item -> idsProcedimentos.contains(item.getId()));
+			procedimentosAdicionar.removeIf(item -> idsProcedimentos.contains(item.getIdProcedimento()));
 			
 			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosAdicionar.stream()
-					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getId()), item.getValor()))
+					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getIdProcedimento()), item.getValor(), item.getValorProposto()))
 					.collect(Collectors.toSet());
 			
 			this.prestadorProcedimentos.addAll(prestadorProcedimentos);
@@ -282,7 +282,7 @@ public class Prestador extends EntidadeBase {
 		if (!CollectionUtils.isEmpty(procedimentosSobrepor)) {
 			
 			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosSobrepor.stream()
-					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getId()), item.getValor()))
+					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getIdProcedimento()), item.getValor(), item.getValorProposto()))
 					.collect(Collectors.toSet());
 			this.prestadorProcedimentos.clear();
 			this.prestadorProcedimentos.addAll(prestadorProcedimentos);

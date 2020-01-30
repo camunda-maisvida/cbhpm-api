@@ -34,15 +34,20 @@ public class PrestadorProcedimento {
 	@Column(name = "valor", nullable = false, precision = 9, scale = 2)
 	private BigDecimal valor;
 
+	@Positive
+	@Column(name = "valor_proposto", precision = 9, scale = 2)
+	private BigDecimal valorProposto;
+
 	public PrestadorProcedimento() {
 
 	}
 
-	public PrestadorProcedimento( Prestador prestador, Procedimento procedimento, BigDecimal valor ) {
+	public PrestadorProcedimento( Prestador prestador, Procedimento procedimento, BigDecimal valor, BigDecimal valorProposto ) {
 
 		this.prestador = prestador;
 		this.procedimento = procedimento;
 		this.valor = valor;
+		this.valorProposto = valorProposto;
 		this.id = new PrestadorProcedimentoPK(prestador, procedimento);
 	}
 
@@ -124,6 +129,26 @@ public class PrestadorProcedimento {
 	public void setValor(BigDecimal valor) {
 
 		this.valor = valor;
+	}
+
+	/**
+	 * Get the value for <code>valorProposto</code>
+	 *
+	 * @return <code>BigDecimal</code>
+	 */
+	public BigDecimal getValorProposto() {
+
+		return valorProposto;
+	}
+
+	/**
+	 * Set the value for <code>valorProposto</code>.
+	 *
+	 * @param valorProposto
+	 */
+	public void setValorProposto(BigDecimal valorProposto) {
+
+		this.valorProposto = valorProposto;
 	}
 
 	/**

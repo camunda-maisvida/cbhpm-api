@@ -5,37 +5,47 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRootName;
+
+import br.med.maisvida.rest.dto.ProcedimentoDTO;
 
 @JsonRootName(value = "procedimentoItem")
 public class PrestadorProcedimentoItemDTO {
 
+	/** Field id. */
 	@NotNull
 	@Positive
-	private Long id;
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
+	private Long idProcedimento;
 
 	@NotNull
 	@Positive
 	private BigDecimal valor;
 
+	@Positive
+	private BigDecimal valorProposto;
+
+	private ProcedimentoDTO procedimento;
+
 	/**
-	 * Get the value for <code>id</code>
+	 * Get the value for <code>idProcedimento</code>
 	 *
 	 * @return <code>Long</code>
 	 */
-	public Long getId() {
+	public Long getIdProcedimento() {
 
-		return id;
+		return idProcedimento;
 	}
 
 	/**
-	 * Set the value for <code>id</code>.
+	 * Set the value for <code>idProcedimento</code>.
 	 *
 	 * @param id
 	 */
-	public void setId(Long id) {
+	public void setIdProcedimento(Long idProcedimento) {
 
-		this.id = id;
+		this.idProcedimento = idProcedimento;
 	}
 
 	/**
@@ -59,6 +69,46 @@ public class PrestadorProcedimentoItemDTO {
 	}
 
 	/**
+	 * Get the value for <code>valorProposto</code>
+	 *
+	 * @return <code>BigDecimal</code>
+	 */
+	public BigDecimal getValorProposto() {
+
+		return valorProposto;
+	}
+
+	/**
+	 * Set the value for <code>valorProposto</code>.
+	 *
+	 * @param valorProposto
+	 */
+	public void setValorProposto(BigDecimal valorProposto) {
+
+		this.valorProposto = valorProposto;
+	}
+
+	/**
+	 * Get the value for <code>procedimento</code>
+	 *
+	 * @return <code>ProcedimentoDTO</code>
+	 */
+	public ProcedimentoDTO getProcedimento() {
+
+		return procedimento;
+	}
+
+	/**
+	 * Set the value for <code>procedimento</code>.
+	 *
+	 * @param procedimento
+	 */
+	public void setProcedimento(ProcedimentoDTO procedimento) {
+
+		this.procedimento = procedimento;
+	}
+
+	/**
 	 * Default description: <br>
 	 * <br>
 	 *
@@ -69,7 +119,7 @@ public class PrestadorProcedimentoItemDTO {
 	@Override
 	public String toString() {
 
-		return "PrestadorProcedimentoItemDTO [" + ( id != null ? "id=" + id + ", " : "" ) + ( valor != null ? "valor=" + valor : "" ) + "]";
+		return "PrestadorProcedimentoItemDTO [" + ( idProcedimento != null ? "idProcedimento=" + idProcedimento + ", " : "" ) + ( valor != null ? "valor=" + valor + ", " : "" ) + ( valorProposto != null ? "valorProposto=" + valorProposto + ", " : "" ) + ( procedimento != null ? "procedimento=" + procedimento : "" ) + "]";
 	}
 
 }

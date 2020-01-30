@@ -44,7 +44,7 @@ public class PrestadorRestController {
 
 		final List<Prestador> entidades = service.buscarTodos(page, size);
 		final List<PrestadorDTO> response = new ArrayList<>();
-		entidades.stream().forEach(item -> response.add(new PrestadorResultDTO(item)));
+		entidades.stream().forEach(item -> response.add(new PrestadorDTO(item)));
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<List<PrestadorDTO>>(response, HttpStatus.OK);
 	}
 
@@ -56,10 +56,11 @@ public class PrestadorRestController {
 	}
 
 	@PostMapping(value = { "/prestadores/procedimentos/", "/prestadores/procedimentos" })
-	public ResponseEntity<PrestadorResultDTO> buscarPorParametro(@Valid @RequestBody @NotNull PrestadorProcedimentoDTO parametro) {
+	public ResponseEntity<PrestadorResultDTO> atualizarProcedimentos(@Valid @RequestBody @NotNull PrestadorProcedimentoDTO parametro) {
 
 		final PrestadorResultDTO response = service.atualizarProcedimentos(parametro);
 
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorResultDTO>(response, HttpStatus.OK);
 	}
+	
 }

@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 5
+    password: qwe123
+    url: jdbc:postgresql://localhost:5432/cbhpm
+    username: postgres
+  jpa:
+    show-sql: true

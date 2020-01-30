@@ -29,6 +29,7 @@ import br.med.maisvida.entity.prestador.Prestador;
 import br.med.maisvida.repository.prestador.PrestadorProcedimentoRepositorio;
 import br.med.maisvida.repository.prestador.PrestadorRepositorio;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
+import br.med.maisvida.rest.dto.prestador.PrestadorFullResultDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoItemDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
@@ -126,7 +127,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 				// Removendo procedimentos
 				if (!CollectionUtils.isEmpty(prestadorProcedimento.getProcedimentosRemover())) {
-					this.prestadorProcedimentoRepositorio.deletarPorProcedimentos(prestadorProcedimento.getProcedimentosRemover().stream().mapToLong(PrestadorProcedimentoItemDTO::getId).toArray());
+					this.prestadorProcedimentoRepositorio.deletarPorProcedimentos(prestadorProcedimento.getProcedimentosRemover().stream().mapToLong(PrestadorProcedimentoItemDTO::getIdProcedimento).toArray());
 				}
 			}
 			flushAndClear();
@@ -148,7 +149,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 		if(StringUtils.isNotBlank(cnpj)) {
 			final Prestador prestador = this.buscarPorCnpj(Long.valueOf(cnpj));
 			if(prestador != null) {
-				result = new PrestadorDTO(prestador);
+				result = new PrestadorFullResultDTO(prestador);
 			}else {
 				final String jsonResult = this.cnesService.buscarPorCnpj(cnpj);
 				result = getPrestadorDTOFromJsonString(jsonResult);
