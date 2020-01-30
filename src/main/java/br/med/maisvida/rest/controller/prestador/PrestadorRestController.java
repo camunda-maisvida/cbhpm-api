@@ -69,7 +69,7 @@ public class PrestadorRestController {
 
 		boolean ok = service.notificarRejeicao(rejeicao);
 
-		return ok ? ResponseEntity.ok().build() :ResponseEntity.badRequest().body("Não foi possível realizar esta operação. Contato o suporte!");
+		return ok ? ResponseEntity.ok().build() : ResponseEntity.badRequest().body("Não foi possível realizar esta operação. Contato o suporte!");
 	}
 	
 }

@@ -13,7 +13,7 @@ import br.med.maisvida.rest.dto.email.EmailDTO;
 import br.med.maisvida.service.email.EnviadorDeEmailService;
 
 @RestController
-public class EnviadorDeEmailRest {
+public class EnviadorDeEmailRestController {
 
 	@Autowired
 	private EnviadorDeEmailService service;
