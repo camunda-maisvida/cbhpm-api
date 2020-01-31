@@ -107,9 +107,9 @@ public class PrestadorRestController {
 
 		try {
 			this.service.uploadContratoAssinado(cnpj, arquivo);
-			return ResponseEntity.ok().body("Arquivo salvo com sucesso");
+			return ResponseEntity.ok().build();
 		} catch (Exception e1) {
-			return ResponseEntity.badRequest().body("Erro ao salvar o contrato assinado = " + e1.getMessage());
+			return ResponseEntity.badRequest().build();
 		}
 
 	}
