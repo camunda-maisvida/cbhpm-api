@@ -281,7 +281,11 @@ public class PrestadorServiceImpl implements PrestadorService {
 				texto.append("<tr>");
 				texto.append("<td>").append(item.getProcedimento().getCodigoExtendido() + " - " + item.getProcedimento().getDescricao()).append("</td>");
 				texto.append("<td>").append(item.getValor()).append("</td>");
-				texto.append("<td>").append(item.getValorProposto()).append("</td>");
+				if(item.getValorProposto() == null) {					
+					texto.append("<td>").append("N/A").append("</td>");
+				}else {					
+					texto.append("<td>").append(item.getValorProposto()).append("</td>");
+				}
 				texto.append("</tr>");
 			});
 
