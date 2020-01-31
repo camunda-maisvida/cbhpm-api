@@ -1,5 +1,8 @@
 package br.med.maisvida.rest.controller.prestador;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +11,10 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itextpdf.text.DocumentException;
+
 import br.med.maisvida.entity.prestador.Prestador;
-import br.med.maisvida.rest.dto.prestador.NotificarRejeicaoDTO;
+import br.med.maisvida.rest.dto.prestador.CnpjComMotivoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
@@ -63,13 +71,25 @@ public class PrestadorRestController {
 
 		return response == null ? ResponseEntity.notFound().build() : new ResponseEntity<PrestadorResultDTO>(response, HttpStatus.OK);
 	}
-	
+
 	@PostMapping(value = { "/prestadores/rejeitar/", "/prestadores/rejeitar" })
-	public ResponseEntity<?> rejetiar(@Valid @RequestBody @NotNull NotificarRejeicaoDTO rejeicao) {
+	public ResponseEntity<?> rejetiar(@Valid @RequestBody @NotNull CnpjComMotivoDTO rejeicao) {
 
 		boolean ok = service.notificarRejeicao(rejeicao);
 
 		return ok ? ResponseEntity.ok().build() : ResponseEntity.badRequest().body("Não foi possível realizar esta operação. Contato o suporte!");
 	}
-	
+
+	@PostMapping(value = "/prestadores/contrato", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<InputStreamResource> gerarContrato(@Valid @RequestBody @NotNull CnpjComMotivoDTO parametro) throws FileNotFoundException, DocumentException {
+
+		InputStream inputStream = this.service.gerarContrato(parametro.getCnpj(), parametro.getMotivo());
+		ByteArrayInputStream bis = (ByteArrayInputStream) inputStream;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=CONTRATO_PRESTADOR_" + parametro.getCnpj() + ".pdf");
+
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(new InputStreamResource(bis));
+	}
+
 }

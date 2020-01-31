@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.br.CNPJ;
 
-public class NotificarRejeicaoDTO {
+public class CnpjComMotivoDTO {
 
 	@NotBlank
 	@CNPJ

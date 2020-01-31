@@ -21,4 +21,7 @@ spring:
           auth: true
           starttls:
             enable: true
-    protocol: smtp    
+    protocol: smtp
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG    
