@@ -1,12 +1,12 @@
 package br.med.maisvida.service.prestador;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 
 import com.itextpdf.text.DocumentException;
 
 import br.med.maisvida.entity.prestador.Prestador;
+import br.med.maisvida.rest.dto.ArquivoDTO;
 import br.med.maisvida.rest.dto.prestador.CnpjComMotivoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
@@ -28,6 +28,10 @@ public interface PrestadorService {
 
 	boolean notificarRejeicao(CnpjComMotivoDTO rejeicao);
 
-	InputStream gerarContrato(String cnpj, String observacao) throws FileNotFoundException, DocumentException;
+	void gerarContrato(String cnpj, String observacao) throws FileNotFoundException, DocumentException;
+
+	String recuperarContrato(String cnpj);
+
+	void uploadContratoAssinado(String cnpj, ArquivoDTO arquivo);
 
 }

@@ -1,20 +1,19 @@
 package br.med.maisvida.rest.controller.prestador;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.itextpdf.text.DocumentException;
-
 import br.med.maisvida.entity.prestador.Prestador;
+import br.med.maisvida.rest.dto.ArquivoDTO;
 import br.med.maisvida.rest.dto.prestador.CnpjComMotivoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
@@ -80,16 +78,43 @@ public class PrestadorRestController {
 		return ok ? ResponseEntity.ok().build() : ResponseEntity.badRequest().body("Não foi possível realizar esta operação. Contato o suporte!");
 	}
 
-	@PostMapping(value = "/prestadores/contrato", produces = MediaType.APPLICATION_PDF_VALUE)
-	public ResponseEntity<InputStreamResource> gerarContrato(@Valid @RequestBody @NotNull CnpjComMotivoDTO parametro) throws FileNotFoundException, DocumentException {
+	@PostMapping(value = "/prestadores/contrato")
+	public ResponseEntity<?> gerarContrato(@Valid @RequestBody @NotNull CnpjComMotivoDTO parametro) {
 
-		InputStream inputStream = this.service.gerarContrato(parametro.getCnpj(), parametro.getMotivo());
-		ByteArrayInputStream bis = (ByteArrayInputStream) inputStream;
+		try {
+			this.service.gerarContrato(parametro.getCnpj(), parametro.getMotivo());
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().build();
+		}
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", "inline; filename=CONTRATO_PRESTADOR_" + parametro.getCnpj() + ".pdf");
+	}
 
-		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(new InputStreamResource(bis));
+	@GetMapping(value = "/prestadores/cnpj/{cnpj}/contrato")
+	public ResponseEntity<String> downloadContrato(@Valid @PathVariable(value = "cnpj") @NotNull @CNPJ String cnpj) {
+
+		try {
+			String contratoBase64 = this.service.recuperarContrato(cnpj);
+			return ResponseEntity.ok(contratoBase64);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().build();
+		}
+
+	}
+
+	@PostMapping("/prestadores/cnpj/{cnpj}/contrato-assinado")
+	@Valid
+	public ResponseEntity<?> uploadFile(@PathVariable(value = "cnpj") @NotNull @CNPJ String cnpj, @RequestBody(required = true) @NotNull ArquivoDTO arquivo) {
+
+		try {
+			this.service.uploadContratoAssinado(cnpj, arquivo);
+			return ResponseEntity.ok().body("Arquivo salvo com sucesso");
+		} catch (Exception e1) {
+			return ResponseEntity.badRequest().body("Erro ao salvar o contrato assinado = " + e1.getMessage());
+		}
+
 	}
 
 }

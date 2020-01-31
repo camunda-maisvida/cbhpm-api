@@ -62,8 +62,14 @@ public class Prestador extends EntidadeBase {
 	@Embedded
 	private Endereco endereco;
 
-	@OneToMany(mappedBy = "prestador", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true)
+	@OneToMany(mappedBy = "prestador", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, orphanRemoval = true)
 	private Set<PrestadorProcedimento> prestadorProcedimentos = new HashSet<>();
+
+	@Column(name = "contrato_base64")
+	private String contratoBase64;
+
+	@Column(name = "contrato_assinado_base64")
+	private String contratoAssinadoBase64;
 
 	/**
 	 * Get the value for <code>cnpj</code>
@@ -248,6 +254,46 @@ public class Prestador extends EntidadeBase {
 		this.prestadorProcedimentos = prestadorProcedimentos;
 	}
 
+	/**
+	 * Get the value for <code>contratoBase64</code>
+	 *
+	 * @return <code>String</code>
+	 */
+	public String getContratoBase64() {
+
+		return contratoBase64;
+	}
+
+	/**
+	 * Set the value for <code>contratoBase64</code>.
+	 *
+	 * @param contratoBase64
+	 */
+	public void setContratoBase64(String contratoBase64) {
+
+		this.contratoBase64 = contratoBase64;
+	}
+
+	/**
+	 * Get the value for <code>contratoAssinadoBase64</code>
+	 *
+	 * @return <code>String</code>
+	 */
+	public String getContratoAssinadoBase64() {
+
+		return contratoAssinadoBase64;
+	}
+
+	/**
+	 * Set the value for <code>contratoAssinadoBase64</code>.
+	 *
+	 * @param contratoAssinadoBase64
+	 */
+	public void setContratoAssinadoBase64(String contratoAssinadoBase64) {
+
+		this.contratoAssinadoBase64 = contratoAssinadoBase64;
+	}
+
 	public Set<Procedimento> getProcedimentos() {
 
 		Set<Procedimento> result = new HashSet<>();
@@ -261,33 +307,27 @@ public class Prestador extends EntidadeBase {
 	public void adicionarProcedimentos(Set<PrestadorProcedimentoItemDTO> procedimentosAdicionar) {
 
 		if (!CollectionUtils.isEmpty(procedimentosAdicionar)) {
-			
-			Set<Long> idsProcedimentos = this.prestadorProcedimentos.stream()
-					.map(m -> m.getProcedimento().getId())
-					.collect(Collectors.toSet());
-			
+
+			Set<Long> idsProcedimentos = this.prestadorProcedimentos.stream().map(m -> m.getProcedimento().getId()).collect(Collectors.toSet());
+
 			procedimentosAdicionar.removeIf(item -> idsProcedimentos.contains(item.getIdProcedimento()));
-			
-			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosAdicionar.stream()
-					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getIdProcedimento()), item.getValor(), item.getValorProposto()))
-					.collect(Collectors.toSet());
-			
+
+			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosAdicionar.stream().map(item -> new PrestadorProcedimento(this, new Procedimento(item.getIdProcedimento()), item.getValor(), item.getValorProposto())).collect(Collectors.toSet());
+
 			this.prestadorProcedimentos.addAll(prestadorProcedimentos);
 		}
 
 	}
 
 	public void sobreporProcedimentos(Set<PrestadorProcedimentoItemDTO> procedimentosSobrepor) {
-		
+
 		if (!CollectionUtils.isEmpty(procedimentosSobrepor)) {
-			
-			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosSobrepor.stream()
-					.map(item -> new PrestadorProcedimento(this, new Procedimento(item.getIdProcedimento()), item.getValor(), item.getValorProposto()))
-					.collect(Collectors.toSet());
+
+			Set<PrestadorProcedimento> prestadorProcedimentos = procedimentosSobrepor.stream().map(item -> new PrestadorProcedimento(this, new Procedimento(item.getIdProcedimento()), item.getValor(), item.getValorProposto())).collect(Collectors.toSet());
 			this.prestadorProcedimentos.clear();
 			this.prestadorProcedimentos.addAll(prestadorProcedimentos);
 		}
-		
+
 	}
 
 	/**

@@ -1,13 +1,12 @@
 package br.med.maisvida.service.impl.prestador;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -45,6 +44,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import br.med.maisvida.entity.prestador.Prestador;
 import br.med.maisvida.repository.prestador.PrestadorProcedimentoRepositorio;
 import br.med.maisvida.repository.prestador.PrestadorRepositorio;
+import br.med.maisvida.rest.dto.ArquivoDTO;
 import br.med.maisvida.rest.dto.email.EmailDTO;
 import br.med.maisvida.rest.dto.prestador.CnpjComMotivoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorDTO;
@@ -297,9 +297,46 @@ public class PrestadorServiceImpl implements PrestadorService {
 	}
 
 	@Override
-	public InputStream gerarContrato(String cnpj, String observacao) throws FileNotFoundException, DocumentException {
+	public String recuperarContrato(String cnpj) {
+
+		if (StringUtils.isNotBlank(cnpj)) {
+			Prestador prestador = this.buscarPorCnpj(Long.valueOf(cnpj));
+			if (prestador != null) {
+				return prestador.getContratoBase64();
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void uploadContratoAssinado(String cnpj, ArquivoDTO arquivo) {
+
+		if (StringUtils.isNotBlank(cnpj) && arquivo != null && StringUtils.isNotBlank(arquivo.getArquivoBase64())) {
+
+			this.repositorio.salvarContratoAssinado(Long.valueOf(cnpj), arquivo.getArquivoBase64());
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void gerarContrato(String cnpj, String observacao) {
 
 		Prestador prestador = this.buscarPorCnpj(Long.valueOf(cnpj));
+		try {
+			byte[] arquivoGerado = this.gerarArquivoContrato(prestador, observacao);
+			String contratoBase64 = Base64.getEncoder().encodeToString(arquivoGerado);
+			if (StringUtils.isNotBlank(contratoBase64)) {
+				this.repositorio.salvarContrato(prestador.getId(), contratoBase64);
+			}
+		} catch (FileNotFoundException | DocumentException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public byte[] gerarArquivoContrato(Prestador prestador, String observacao) throws FileNotFoundException, DocumentException {
 
 		Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
 		Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
@@ -342,8 +379,8 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 		document.close();
 
-		InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
-		return inputStream;
+		// InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+		return baos.toByteArray();
 	}
 
 	private static void createTable(Section subCatPart, Prestador prestador) throws BadElementException {

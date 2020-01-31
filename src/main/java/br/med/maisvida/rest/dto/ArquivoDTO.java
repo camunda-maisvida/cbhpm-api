@@ -2,16 +2,10 @@ package br.med.maisvida.rest.dto;
 
 import javax.validation.constraints.NotBlank;
 
-import org.hibernate.validator.constraints.br.CNPJ;
-
 public class ArquivoDTO {
 
 	@NotBlank
 	private String arquivoBase64;
-
-	@NotBlank
-	@CNPJ
-	private String cnpj;
 
 	public ArquivoDTO() {
 
@@ -27,13 +21,4 @@ public class ArquivoDTO {
 		this.arquivoBase64 = arquivoBase64;
 	}
 
-	public String getCnpj() {
-
-		return cnpj;
-	}
-
-	public void setCnpj(String cnpj) {
-
-		this.cnpj = cnpj;
-	}
 }
