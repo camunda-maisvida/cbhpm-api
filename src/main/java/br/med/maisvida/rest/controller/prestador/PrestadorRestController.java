@@ -1,13 +1,8 @@
 package br.med.maisvida.rest.controller.prestador;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -92,11 +87,13 @@ public class PrestadorRestController {
 	}
 
 	@GetMapping(value = "/prestadores/cnpj/{cnpj}/contrato")
-	public ResponseEntity<String> downloadContrato(@Valid @PathVariable(value = "cnpj") @NotNull @CNPJ String cnpj) {
+	public ResponseEntity<ArquivoDTO> downloadContrato(@Valid @PathVariable(value = "cnpj") @NotNull @CNPJ String cnpj) {
 
 		try {
 			String contratoBase64 = this.service.recuperarContrato(cnpj);
-			return ResponseEntity.ok(contratoBase64);
+			ArquivoDTO arquivoResult = new ArquivoDTO();
+			arquivoResult.setArquivoBase64(contratoBase64);
+			return ResponseEntity.ok(arquivoResult);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().build();
