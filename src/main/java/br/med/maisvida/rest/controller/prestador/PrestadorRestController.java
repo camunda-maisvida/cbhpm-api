@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import br.med.maisvida.rest.dto.prestador.PrestadorProcedimentoDTO;
 import br.med.maisvida.rest.dto.prestador.PrestadorResultDTO;
 import br.med.maisvida.service.prestador.PrestadorService;
 
+@CrossOrigin
 @RestController
 @Validated
 public class PrestadorRestController {
