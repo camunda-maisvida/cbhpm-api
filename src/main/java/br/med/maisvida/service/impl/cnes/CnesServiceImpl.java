@@ -9,9 +9,9 @@ import br.med.maisvida.service.cnes.CnesService;
 @Service
 public class CnesServiceImpl implements CnesService {
 
-	private static final String URL_CNES_API = "https://cnes-api.herokuapp.com/cnes/estabelecimento/cnpj/%s";
+	//private static final String URL_CNES_API = "https://cnes-api.herokuapp.com/cnes/estabelecimento/cnpj/%s";
 
-	// private static final String URL_LOCAL_CNES_API = "http://localhost:8880/cnes/estabelecimento/cnpj/%s";
+	 private static final String URL_CNES_API = "http://localhost:8881/cnes/estabelecimento/cnpj/%s";
 
 	@Autowired
 	private RestTemplate restTemplate;
